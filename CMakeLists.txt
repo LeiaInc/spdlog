@@ -13,6 +13,15 @@ spdlog_extract_version()
 project(spdlog VERSION ${SPDLOG_VERSION} LANGUAGES CXX)
 message(STATUS "Build spdlog: ${SPDLOG_VERSION}")
 
+if(NOT DISABLE_LEIA_CONFIGURATION)
+    set(SPDLOG_BUILD_SHARED ON)
+    set(SPDLOG_NO_THREAD_ID ON)
+    set(SPDLOG_WCHAR_SUPPORT ON)
+    set(SPDLOG_WCHAR_FILENAMES ON)
+    set(SPDLOG_DISABLE_DEFAULT_LOGGER ON)
+    set(SPDLOG_BUILD_EXAMPLE OFF)
+endif()
+
 include(GNUInstallDirs)
 
 # ---------------------------------------------------------------------------------------
@@ -158,6 +167,8 @@ if(SPDLOG_BUILD_SHARED OR BUILD_SHARED_LIBS)
 else()
     add_library(spdlog STATIC ${SPDLOG_SRCS} ${SPDLOG_ALL_HEADERS})
 endif()
+
+set_target_properties(spdlog PROPERTIES OUTPUT_NAME "leiaspdlog")
 
 add_library(spdlog::spdlog ALIAS spdlog)
 
@@ -317,4 +328,8 @@ if(SPDLOG_INSTALL)
     # Support creation of installable packages
     # ---------------------------------------------------------------------------------------
     include(cmake/spdlogCPack.cmake)
+else()
+    install(
+        DIRECTORY include/spdlog
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
